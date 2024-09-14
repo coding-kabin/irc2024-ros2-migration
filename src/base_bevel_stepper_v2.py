@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import rospy
+import rclpy
 from std_msgs.msg import Int16MultiArray
 from sensor_msgs.msg import Joy
 
@@ -15,7 +15,7 @@ class JoystickControl:
           self.msg = Int16MultiArray()
         
           self.sub = node.create_subscription(Joy, "/joy1", self.callback)
-          self.pub = node.create_publisher(Int16MultiArray, queue_size=1, "/control2")
+          self.pub = node.create_publisher(Int16MultiArray, "/control2",1)
         
      def callback(self, data):
           r2 = data.axes[5] # axes[5] //controls Base
@@ -67,10 +67,10 @@ class JoystickControl:
           self.pub.publish(self.msg)
 
 #rospy.init_node("joy_control", anonymous=True)
-pub = node.create_publisher(Int16MultiArray, queue_size=1, "/control2")
+#pub = node.create_publisher(Int16MultiArray,"/control2",1)
 
 if __name__ == '__main__':
     rclpy.init()
     node = rclpy.create_node("base_bevel_stepper_v2", anonymous=True)
     joystick_control = JoystickControl()
-    rospy.spin()
+    rclpy.spin()

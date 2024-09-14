@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import rospy
+import rclpy
 from std_msgs.msg import Int16MultiArray
 from sensor_msgs.msg import Joy
 
@@ -12,7 +12,7 @@ class JoystickControl:
         self.msg = Int16MultiArray()
         
         self.sub = node.create_subscription(Joy, "/joy1", self.callback)
-        self.pub = node.create_publisher(Int16MultiArray, queue_size=1, "/control1")
+        self.pub = node.create_publisher(Int16MultiArray, "/control1",1)
 
     def callback(self, data):
         xAxis1 = data.axes[0] 
@@ -50,4 +50,4 @@ if __name__ == '__main__':
     rclpy.init()
     node = rclpy.create_node("cam_la_v2", anonymous=True)
     joystick_control = JoystickControl()
-    rospy.spin()
+    rclpy.spin()

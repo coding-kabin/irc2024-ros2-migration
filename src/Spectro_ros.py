@@ -1,46 +1,75 @@
+#!/usr/bin/env python3
+
 import serial
-import time
-import rospy
+import rclpy
+from rclpy.node import Node
 from irc2024.msg import spectro_msg
-from std_msgs.msg import Float32MultiArray, MultiArrayLayout, MultiArrayDimension
 
-# Define the serial port and baud rate
-ser = serial.Serial('/dev/ttyUSB0', 115200)  # Update the port accordingly
 
-# Create the publisher and initialize the node outside the loop
-pub = node.create_publisher(spectro_msg, queue_size=10, '/spectrometer')
-rospy.init_node('talker', anonymous=True)
-rate = rospy.Rate(10)
+class SpectrometerNode(Node):
+    def __init__(self):
+        super().__init__('spectrometer_node')
 
-try:
-    while not rospy.is_shutdown():
-        data = ser.readline().decode('utf-8').strip()
-        reading = []
-        meow = ""
+        # Define the serial port and baud rate
+        self.ser = serial.Serial('/dev/ttyUSB0', 115200)  # Update the port accordingly
 
-        for c in data:
-            if c == ',' and meow != "":
-                reading.append(round(float(meow), 2))
-                meow = ""
-            else:
-                meow += c
+        # Create the publisher
+        self.pub = self.create_publisher(spectro_msg, '/spectrometer', 10)
+        
+        # Create a timer to call the read_serial method at a fixed interval
+        self.timer = self.create_timer(0.1, self.read_serial)
 
-        if reading:
-            pub_val = spectro_msg()
-            pub_val.brad = -1
-            pub.publish(pub_val)
-            # Publish the message
-            for i in reading:
-                print(i)
-                pub_val.brad = i
-                pub.publish(pub_val)
-                rate.sleep()
-            else:
+    def read_serial(self):
+        if not self.ser.is_open:
+            return
+        
+        try:
+            data = self.ser.readline().decode('utf-8').strip()
+            reading = []
+            meow = ""
+
+            for c in data:
+                if c == ',' and meow != "":
+                    reading.append(round(float(meow), 2))
+                    meow = ""
+                else:
+                    meow += c
+
+            if reading:
+                pub_val = spectro_msg()
                 pub_val.brad = -1
-                pub.publish(pub_val)
+                self.pub.publish(pub_val)
+                # Publish the message
+                for i in reading:
+                    print(i)
+                    pub_val.brad = i
+                    self.pub.publish(pub_val)
+                    self.get_logger().info(f'Published: {i}')
+                else:
+                    pub_val.brad = -1
+                    self.pub.publish(pub_val)
 
-        time.sleep(0.1)
+        except Exception as e:
+            self.get_logger().error(f'Error reading serial data: {e}')
 
-except KeyboardInterrupt:
-    ser.close()
-    print("Serial connection closed.")
+    def close_serial(self):
+        if self.ser.is_open:
+            self.ser.close()
+            self.get_logger().info('Serial connection closed.')
+
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = SpectrometerNode()
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        node.close_serial()
+        node.destroy_node()
+        rclpy.shutdown()
+
+
+if __name__ == '__main__':
+    main()

@@ -1,27 +1,45 @@
 #!/usr/bin/env python3
-import rospy
+
+import rclpy
+from rclpy.node import Node
 import cv2
 from pyzbar.pyzbar import decode
 
-def decoder(image):
-    gray_img = cv2.cvtColor(image,0)
-    barcode = decode(gray_img)
+class QRCodeDecoder(Node):
+    def __init__(self):
+        super().__init__('qrcode_decoder_node')
+        self.cap = None
+        self.timer = self.create_timer(0.05, self.timer_callback)  # Set timer to 20 Hz
 
-    for obj in barcode:
+    def set_video_source(self, video_source):
+        self.cap = cv2.VideoCapture(video_source)
 
-        barcodeData = obj.data.decode("utf-8")
-        print("Barcode: "+barcodeData)
+    def timer_callback(self):
+        if self.cap is not None and self.cap.isOpened():
+            ret, frame = self.cap.read()
+            if ret:
+                self.decoder(frame)
 
+    def decoder(self, image):
+        gray_img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        barcode = decode(gray_img)
 
-if __name__ == "__main__":
-    rclpy.init()
-    node = rclpy.create_node("qrcode", anonymous=True)
-    print("Ready!")
-    print("Enter Video Number: ")
-    inp = int(input())
-    cap = cv2.VideoCapture(inp)
-    while not rospy.is_shutdown():
-        rate = rospy.Rate(20)
-        ret, frame = cap.read()
-        decoder(frame)
-        rate.sleep()
+        for obj in barcode:
+            barcode_data = obj.data.decode("utf-8")
+            self.get_logger().info(f"Barcode: {barcode_data}")
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = QRCodeDecoder()
+    
+    video_source = int(input("Enter Video Number: "))
+    node.set_video_source(video_source)
+    
+    rclpy.spin(node)
+
+    node.cap.release()  # Release the video capture object
+    node.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
