@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Martin Idel
+// Copyright (c) 2009, Willow Garage, Inc.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
@@ -26,11 +26,56 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef IMAGE_TRANSPORT__CAMERA_COMMON_H_
-#define IMAGE_TRANSPORT__CAMERA_COMMON_H_
+#ifndef IMAGE_TRANSPORT__TRANSPORT_HINTS_HPP_
+#define IMAGE_TRANSPORT__TRANSPORT_HINTS_HPP_
 
-#pragma message ("Warning: This header is deprecated. Use 'camera_common.hpp' instead")
+#include <memory>
+#include <string>
 
-#include "camera_common.hpp"
+#include "rclcpp/node.hpp"
 
-#endif  // IMAGE_TRANSPORT__CAMERA_COMMON_H_
+#include "image_transport/visibility_control.hpp"
+
+namespace image_transport
+{
+
+/**
+ * \brief Stores transport settings for an image topic subscription.
+ */
+class TransportHints
+{
+public:
+  /**
+   * \brief Constructor.
+   *
+   * The default transport can be overridden by setting a certain parameter to the
+   * name of the desired transport. By default this parameter is named "image_transport"
+   * in the node's local namespace. For consistency across ROS applications, the
+   * name of this parameter should not be changed without good reason.
+   *
+   * @param node Node to use when looking up the transport parameter.
+   * @param default_transport Preferred transport to use
+   * @param parameter_name The name of the transport parameter
+   */
+  IMAGE_TRANSPORT_PUBLIC
+  TransportHints(
+    const rclcpp::Node * node,
+    const std::string & default_transport = "raw",
+    const std::string & parameter_name = "image_transport")
+  {
+    node->get_parameter_or<std::string>(parameter_name, transport_, default_transport);
+  }
+
+  IMAGE_TRANSPORT_PUBLIC
+  const std::string & getTransport() const
+  {
+    return transport_;
+  }
+
+private:
+  std::string transport_;
+};
+
+}  // namespace image_transport
+
+#endif  // IMAGE_TRANSPORT__TRANSPORT_HINTS_HPP_

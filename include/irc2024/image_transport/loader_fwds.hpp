@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Martin Idel
+// Copyright (c) 2009, Willow Garage, Inc.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
@@ -26,11 +26,30 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef IMAGE_TRANSPORT__CAMERA_COMMON_H_
-#define IMAGE_TRANSPORT__CAMERA_COMMON_H_
+#ifndef IMAGE_TRANSPORT__LOADER_FWDS_HPP_
+#define IMAGE_TRANSPORT__LOADER_FWDS_HPP_
 
-#pragma message ("Warning: This header is deprecated. Use 'camera_common.hpp' instead")
+#include <memory>
 
-#include "camera_common.hpp"
+// Forward-declare some classes most users shouldn't care about so that
+// image_transport.hpp doesn't bring them in.
 
-#endif  // IMAGE_TRANSPORT__CAMERA_COMMON_H_
+namespace pluginlib
+{
+template<class T>
+class ClassLoader;
+}  // namespace pluginlib
+
+namespace image_transport
+{
+class PublisherPlugin;
+class SubscriberPlugin;
+
+typedef pluginlib::ClassLoader<PublisherPlugin> PubLoader;
+typedef std::shared_ptr<PubLoader> PubLoaderPtr;
+
+typedef pluginlib::ClassLoader<SubscriberPlugin> SubLoader;
+typedef std::shared_ptr<SubLoader> SubLoaderPtr;
+}  // namespace image_transport
+
+#endif  // IMAGE_TRANSPORT__LOADER_FWDS_HPP_

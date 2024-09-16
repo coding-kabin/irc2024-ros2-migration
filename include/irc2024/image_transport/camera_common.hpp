@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Martin Idel
+// Copyright (c) 2009, Willow Garage, Inc.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
@@ -26,11 +26,31 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef IMAGE_TRANSPORT__CAMERA_COMMON_H_
-#define IMAGE_TRANSPORT__CAMERA_COMMON_H_
+#ifndef IMAGE_TRANSPORT__CAMERA_COMMON_HPP_
+#define IMAGE_TRANSPORT__CAMERA_COMMON_HPP_
 
-#pragma message ("Warning: This header is deprecated. Use 'camera_common.hpp' instead")
+#include <string>
 
-#include "camera_common.hpp"
+#include "image_transport/visibility_control.hpp"
 
-#endif  // IMAGE_TRANSPORT__CAMERA_COMMON_H_
+namespace image_transport
+{
+
+/**
+ * \brief Form the camera info topic name, sibling to the base topic.
+ *
+ * \note This function assumes that the name is completely resolved. If the \c
+ * base_topic is remapped the resulting camera info topic will be incorrect.
+ */
+IMAGE_TRANSPORT_PUBLIC
+std::string getCameraInfoTopic(const std::string & base_topic);
+
+/**
+ * \brief Replacement for uses of boost::erase_last_copy
+ */
+IMAGE_TRANSPORT_PUBLIC
+std::string erase_last_copy(const std::string & input, const std::string & search);
+
+}  // namespace image_transport
+
+#endif  // IMAGE_TRANSPORT__CAMERA_COMMON_HPP_

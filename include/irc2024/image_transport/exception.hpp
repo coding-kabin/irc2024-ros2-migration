@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Martin Idel
+// Copyright (c) 2009, Willow Garage, Inc.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
@@ -26,11 +26,45 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef IMAGE_TRANSPORT__CAMERA_COMMON_H_
-#define IMAGE_TRANSPORT__CAMERA_COMMON_H_
+#ifndef IMAGE_TRANSPORT__EXCEPTION_HPP_
+#define IMAGE_TRANSPORT__EXCEPTION_HPP_
 
-#pragma message ("Warning: This header is deprecated. Use 'camera_common.hpp' instead")
+#include <stdexcept>
+#include <string>
 
-#include "camera_common.hpp"
+#include "image_transport/visibility_control.hpp"
 
-#endif  // IMAGE_TRANSPORT__CAMERA_COMMON_H_
+namespace image_transport
+{
+
+/**
+ * \brief A base class for all image_transport exceptions inheriting from std::runtime_error.
+ */
+class Exception : public std::runtime_error
+{
+public:
+  explicit Exception(const std::string & message)
+  : std::runtime_error(message) {}
+};
+
+/**
+ * \brief An exception class thrown when image_transport is unable to load a requested transport.
+ */
+class TransportLoadException : public Exception
+{
+public:
+  TransportLoadException(const std::string & transport, const std::string & message)
+  : Exception("Unable to load plugin for transport '" + transport + "', error string:\n" + message),
+    transport_(transport.c_str())
+  {
+  }
+
+  std::string getTransport() const {return transport_;}
+
+protected:
+  const char * transport_;
+};
+
+}  // namespace image_transport
+
+#endif  // IMAGE_TRANSPORT__EXCEPTION_HPP_

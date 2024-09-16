@@ -20,9 +20,9 @@ find_package(rosidl_default_generators REQUIRED)
 
 # Declare message and service files
 rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/spectro_msg.msg"
-  "msg/sensor_msg.msg"
-  "msg/atmos_msg.msg"
+  "msg/SpectroMsg.msg"
+  "msg/SensorMsg.msg"
+  "msg/AtmosMsg.msg"
   DEPENDENCIES std_msgs
 )
 
@@ -50,7 +50,6 @@ ament_target_dependencies(teleop
   "nav_msgs"
   "image_transport"
   "cv_bridge"
-  "rosconsole"
 )
 
 ament_target_dependencies(camfeed1
@@ -61,9 +60,8 @@ ament_target_dependencies(camfeed1
   "nav_msgs"
   "image_transport"
   "cv_bridge"
-  "rosconsole"
+  "OpenCV"
 )
-ament_target_dependencies(camfeed1 ${OpenCV_LIBRARIES})
 
 ament_target_dependencies(camfeed2
   "std_msgs"
@@ -73,9 +71,8 @@ ament_target_dependencies(camfeed2
   "nav_msgs"
   "image_transport"
   "cv_bridge"
-  "rosconsole"
+  "OpenCV"
 )
-ament_target_dependencies(camfeed2 ${OpenCV_LIBRARIES})
 
 ament_target_dependencies(camfeed3
   "std_msgs"
@@ -85,9 +82,8 @@ ament_target_dependencies(camfeed3
   "nav_msgs"
   "image_transport"
   "cv_bridge"
-  "rosconsole"
+  "OpenCV"
 )
-ament_target_dependencies(camfeed3 ${OpenCV_LIBRARIES})
 
 ament_target_dependencies(videofeed1
   "std_msgs"
@@ -97,9 +93,8 @@ ament_target_dependencies(videofeed1
   "nav_msgs"
   "image_transport"
   "cv_bridge"
-  "rosconsole"
+  "OpenCV"
 )
-ament_target_dependencies(videofeed1 ${OpenCV_LIBRARIES})
 
 ament_target_dependencies(videofeed2
   "std_msgs"
@@ -109,9 +104,8 @@ ament_target_dependencies(videofeed2
   "nav_msgs"
   "image_transport"
   "cv_bridge"
-  "rosconsole"
+  "OpenCV"
 )
-ament_target_dependencies(videofeed2 ${OpenCV_LIBRARIES})
 
 ament_target_dependencies(videofeed3
   "std_msgs"
@@ -121,9 +115,8 @@ ament_target_dependencies(videofeed3
   "nav_msgs"
   "image_transport"
   "cv_bridge"
-  "rosconsole"
+  "OpenCV"
 )
-ament_target_dependencies(videofeed3 ${OpenCV_LIBRARIES})
 
 ament_target_dependencies(base_control
   "std_msgs"
@@ -133,7 +126,7 @@ ament_target_dependencies(base_control
   "nav_msgs"
   "image_transport"
   "cv_bridge"
-  "rosconsole"
+  "OpenCV"
 )
 
 # Install targets

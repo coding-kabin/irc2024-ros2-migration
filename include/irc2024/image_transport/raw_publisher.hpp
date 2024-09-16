@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Martin Idel
+// Copyright (c) 2009, Willow Garage, Inc.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
@@ -26,11 +26,48 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef IMAGE_TRANSPORT__CAMERA_COMMON_H_
-#define IMAGE_TRANSPORT__CAMERA_COMMON_H_
+#ifndef IMAGE_TRANSPORT__RAW_PUBLISHER_HPP_
+#define IMAGE_TRANSPORT__RAW_PUBLISHER_HPP_
 
-#pragma message ("Warning: This header is deprecated. Use 'camera_common.hpp' instead")
+#include <string>
 
-#include "camera_common.hpp"
+#include "sensor_msgs/msg/image.hpp"
 
-#endif  // IMAGE_TRANSPORT__CAMERA_COMMON_H_
+#include "image_transport/simple_publisher_plugin.hpp"
+#include "image_transport/visibility_control.hpp"
+
+namespace image_transport
+{
+
+/**
+ * \brief The default PublisherPlugin.
+ *
+ * RawPublisher is a simple wrapper for ros::Publisher, publishing unaltered Image
+ * messages on the base topic.
+ */
+
+class RawPublisher : public SimplePublisherPlugin<sensor_msgs::msg::Image>
+{
+public:
+  virtual ~RawPublisher() {}
+
+  virtual std::string getTransportName() const
+  {
+    return "raw";
+  }
+
+protected:
+  virtual void publish(const sensor_msgs::msg::Image & message, const PublishFn & publish_fn) const
+  {
+    publish_fn(message);
+  }
+
+  virtual std::string getTopicToAdvertise(const std::string & base_topic) const
+  {
+    return base_topic;
+  }
+};
+
+}  // namespace image_transport
+
+#endif  // IMAGE_TRANSPORT__RAW_PUBLISHER_HPP_
